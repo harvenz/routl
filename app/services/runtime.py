@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 
 class RuntimeManager:
     def __init__(self, dir: Path):
@@ -22,3 +23,9 @@ class RuntimeManager:
                 f"DataDirectory {data_dir}",
             ]),
         )
+
+    def run(self, id: int):
+        instance_dir = self.dir / format(id, "02x")
+
+        subprocess.run(["tor", "-f", str(instance_dir) + "/" + "torrc"], 
+                       capture_output=True, text=True)
