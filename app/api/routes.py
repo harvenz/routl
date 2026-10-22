@@ -3,16 +3,21 @@ from pathlib import Path
 import threading
 
 from app.services.runtime import RuntimeManager
+from app.services.instance import InstanceManager
 
 app = Flask(__name__)
-runtime = RuntimeManager(Path("./runtime/instances"))
+runtime = RuntimeManager(Path("./runtime/"))
 
 @app.route("/")
 def home():
-    runtime.create(3)
+    instances = []
 
-    for i in range(3):
-        th = threading.Thread(target=runtime.run, args=(i,))
-        th.start()
+    for port in range(9050, 9053):
+        instance = InstanceManager(runtime_dir=runtime.dir, port=port)
+        instance.create()
+        instances.append(instance)
+
+    for instance in instances:
+        instance.start()
         
     return "routl working"
